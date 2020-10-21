@@ -1,6 +1,10 @@
 const express= require('express');
+const User = require('../models/User');
 
 const router=express.Router();
+
+//User models
+const user=require('../models/User');
 
 //Login Page
 router.get('/login',(req,res)=> res.render('login'));
@@ -37,7 +41,39 @@ router.post('/register',(req,res)=>{
             password2
         })
     }else{
-        res.send('pass');
+        //validation passed
+        User.findOne({email : email})
+        .then(user=>{
+            if(user){
+                //user exist
+                errors.push({msg:'Email already exist'});
+                res.render('register',{
+                    errors,
+                    name,
+                    email,
+                    password,
+                    password2
+                });
+            }else{
+                //validation passed
+                User.findOne({email:email})
+                .then(user=>{
+                    if(user){
+                        //User exists
+                        errors.push({msg:'Email already registered'});
+                        res.render('register',{
+                            errors,
+                            name,
+                            email,
+                            password,
+                            password2
+                        });
+                    }else{
+                        
+                    }
+                })
+            }
+        });
     }
 })
 
